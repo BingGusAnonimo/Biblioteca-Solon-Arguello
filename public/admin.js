@@ -147,29 +147,35 @@ function renderTable() {
 function input(name, label, value = '', type = 'text', opts = {}) {
   const required = opts.required ? 'required' : '';
   const wide = opts.wide ? 'wide' : '';
-  return `<label class="form-field ${wide}"><span>${escapeHtml(label)}</span><input name="${name}" type="${type}" value="${escapeHtml(value)}" ${required} ${type === 'number' ? 'min="0" max="2100"' : ''}></label>`;
+  const maxLength = opts.maxlength ? `maxlength="${opts.maxlength}"` : '';
+  const minLength = opts.minlength ? `minlength="${opts.minlength}"` : '';
+  const pattern = opts.pattern ? `pattern="${escapeHtml(opts.pattern)}"` : '';
+  const minMax = type === 'number'
+    ? `min="0" max="${new Date().getFullYear() + 1}" step="1"` : '';
+  const dateMin = type === 'date' ? `min="${new Date(Date.now() + 86400000).toISOString().slice(0, 10)}"` : '';
+  return `<label class="form-field ${wide}"><span>${escapeHtml(label)}</span><input name="${name}" type="${type}" value="${escapeHtml(value)}" ${required} ${maxLength} ${minLength} ${pattern} ${minMax} ${dateMin}></label>`;
 }
 function select(name, label, options, selected = '', opts = {}) {
   return `<label class="form-field ${opts.wide ? 'wide' : ''}"><span>${escapeHtml(label)}</span><select name="${name}" required><option value="">Selecciona una opción</option>${options.map(o => `<option value="${escapeHtml(o.value)}" ${String(o.value) === String(selected) ? 'selected' : ''}>${escapeHtml(o.label)}</option>`).join('')}</select></label>`;
 }
 function formMarkup(record) {
   if (page === 'books') return [
-    input('titulo', 'Título', record?.titulo, 'text', { required: true, wide: true }),
-    input('autor', 'Autor', record?.autor, 'text', { required: true }),
-    input('categoria', 'Categoría', record?.categoria, 'text', { required: true }),
-    input('editorial', 'Editorial', record?.editorial),
+    input('titulo', 'Título', record?.titulo, 'text', { required: true, wide: true, minlength: 2, maxlength: 200 }),
+    input('autor', 'Autor', record?.autor, 'text', { required: true, minlength: 2, maxlength: 150 }),
+    input('categoria', 'Categoría', record?.categoria, 'text', { required: true, minlength: 2, maxlength: 100 }),
+    input('editorial', 'Editorial', record?.editorial, 'text', { maxlength: 150 }),
     input('anio', 'Año de publicación', record?.anio, 'number'),
-    input('isbn', 'ISBN', record?.isbn, 'text', { wide: true })
+    input('isbn', 'ISBN (10 o 13 dígitos; opcional)', record?.isbn, 'text', { wide: true, maxlength: 25 })
   ].join('');
   if (page === 'copies') return record ?
-    input('ubicacion', 'Ubicación del ejemplar', record.ubicacion, 'text', { wide: true }) :
+    input('ubicacion', 'Ubicación del ejemplar', record.ubicacion, 'text', { wide: true, maxlength: 100 }) :
     select('libroId', 'Libro', state.libros.map(b => ({ value: b.id, label: b.titulo })), '', { wide: true }) +
-    input('codigoInventario', 'Código de inventario', '', 'text', { required: true }) +
-    input('ubicacion', 'Ubicación', '', 'text');
-  if (page === 'readers') return (record ? '' : input('codigoLector', 'Código de lector', '', 'text', { required: true })) +
-    input('nombre', 'Nombre completo', record?.nombre, 'text', { required: true, wide: !!record }) +
-    input('correo', 'Correo electrónico', record?.correo, 'email') +
-    input('telefono', 'Teléfono', record?.telefono, 'text') +
+    input('codigoInventario', 'Código de inventario', '', 'text', { required: true, minlength: 3, maxlength: 30 }) +
+    input('ubicacion', 'Ubicación', '', 'text', { maxlength: 100 });
+  if (page === 'readers') return (record ? '' : input('codigoLector', 'Código de lector', '', 'text', { required: true, minlength: 3, maxlength: 30 })) +
+    input('nombre', 'Nombre completo', record?.nombre, 'text', { required: true, wide: !!record, minlength: 2, maxlength: 120 }) +
+    input('correo', 'Correo electrónico', record?.correo, 'email', { maxlength: 254 }) +
+    input('telefono', 'Teléfono (10 dígitos)', record?.telefono, 'tel', { maxlength: 10, pattern: '[0-9]{10}' }) +
     (record ? select('activo', 'Estado', [{ value: 'true', label: 'Activo' }, { value: 'false', label: 'Inactivo' }], String(record.activo), { wide: true }) : '');
   if (page === 'loans') {
     const lectores = state.lectores.filter(x => x.activo).map(x => ({ value: x.id, label: `${x.codigoLector} · ${x.nombre}` }));
@@ -194,6 +200,75 @@ function closeDialog() { $('record-dialog').close(); editingId = null; }
 const varsFromForm = () => Object.fromEntries(new FormData($('record-form')).entries());
 const nullIfEmpty = (v) => v === '' ? null : v;
 
+// Reglas rápidas en la interfaz. Las mismas reglas importantes se vuelven
+// a verificar en Mongoose: nunca se debe confiar únicamente en el navegador.
+function validarFormulario(v, esEdicion) {
+  const texto = (campo) => String(v[campo] ?? '').trim();
+  const obligatorio = (campo, etiqueta, maximo) => {
+    const valor = texto(campo);
+    if (valor.length < 2 || valor.length > maximo) {
+      throw new Error(`${etiqueta}: escribe entre 2 y ${maximo} caracteres.`);
+    }
+  };
+  const codigo = (campo, etiqueta) => {
+    const valor = texto(campo).toUpperCase();
+    if (!/^[A-Z0-9]+(?:-[A-Z0-9]+)*$/.test(valor) || valor.length < 3 || valor.length > 30) {
+      throw new Error(`${etiqueta}: usa entre 3 y 30 letras, números o guiones intermedios.`);
+    }
+  };
+
+  if (page === 'books') {
+    obligatorio('titulo', 'Título', 200);
+    obligatorio('autor', 'Autor', 150);
+    obligatorio('categoria', 'Categoría', 100);
+    if (texto('editorial').length > 150) throw new Error('Editorial: máximo 150 caracteres.');
+    if (texto('anio')) {
+      const anio = Number(texto('anio'));
+      if (!Number.isInteger(anio) || anio < 0 || anio > new Date().getFullYear() + 1) {
+        throw new Error('Año de publicación: escribe un año entero válido.');
+      }
+    }
+    if (texto('isbn')) {
+      const isbn = texto('isbn').replace(/[\s-]/g, '').toUpperCase();
+      if (!/^(?:\d{13}|\d{9}[\dX])$/.test(isbn)) {
+        throw new Error('ISBN: debe tener 10 o 13 caracteres válidos (se permiten guiones).');
+      }
+    }
+  }
+
+  if (page === 'copies') {
+    if (!esEdicion) {
+      if (!texto('libroId')) throw new Error('Selecciona un libro.');
+      codigo('codigoInventario', 'Código de inventario');
+    }
+    if (texto('ubicacion').length > 100) throw new Error('Ubicación: máximo 100 caracteres.');
+  }
+
+  if (page === 'readers') {
+    if (!esEdicion) codigo('codigoLector', 'Código de lector');
+    obligatorio('nombre', 'Nombre del lector', 120);
+    const correo = texto('correo');
+    if (correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+      throw new Error('Escribe un correo electrónico válido.');
+    }
+    const telefono = texto('telefono');
+    if (telefono && !/^\d{10}$/.test(telefono)) {
+      throw new Error('El teléfono debe contener 10 dígitos.');
+    }
+  }
+
+  if (page === 'loans') {
+    if (!texto('lectorId') || !texto('ejemplarId')) {
+      throw new Error('Selecciona un lector activo y un ejemplar disponible.');
+    }
+    const fecha = texto('fechaVencimiento');
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha) || Number.isNaN(new Date(fecha).getTime()) ||
+        new Date(`${fecha}T23:59:59.999Z`) <= new Date()) {
+      throw new Error('Selecciona una fecha de vencimiento futura.');
+    }
+  }
+}
+
 async function saveRecord(event) {
   event.preventDefault();
   const v = varsFromForm();
@@ -201,6 +276,7 @@ async function saveRecord(event) {
   const saveBtn = $('save-dialog');
   saveBtn.disabled = true;
   try {
+    validarFormulario(v, isEdit);
     let query, vars;
     if (page === 'books') {
       const data = { titulo: v.titulo.trim(), autor: v.autor.trim(), categoria: v.categoria.trim(), editorial: nullIfEmpty(v.editorial?.trim()), anio: v.anio ? Number(v.anio) : null, isbn: nullIfEmpty(v.isbn?.trim()) };
@@ -214,18 +290,18 @@ async function saveRecord(event) {
     } else if (page === 'copies') {
       if (isEdit) {
         query = 'mutation($id:ID!,$datos:ActualizarEjemplarInput!){actualizarEjemplar(id:$id,datos:$datos){id}}';
-        vars = { id: editingId, datos: { ubicacion: v.ubicacion || '' } };
+        vars = { id: editingId, datos: { ubicacion: v.ubicacion?.trim() || '' } };
       } else {
         query = 'mutation($libroId:ID!,$codigoInventario:String!,$ubicacion:String){agregarEjemplar(libroId:$libroId,codigoInventario:$codigoInventario,ubicacion:$ubicacion){id}}';
-        vars = { libroId: v.libroId, codigoInventario: v.codigoInventario.trim(), ubicacion: v.ubicacion || '' };
+        vars = { libroId: v.libroId, codigoInventario: v.codigoInventario.trim().toUpperCase(), ubicacion: v.ubicacion?.trim() || '' };
       }
     } else if (page === 'readers') {
       if (isEdit) {
         query = 'mutation($id:ID!,$datos:ActualizarLectorInput!){actualizarLector(id:$id,datos:$datos){id}}';
-        vars = { id: editingId, datos: { nombre: v.nombre.trim(), correo: v.correo || '', telefono: v.telefono || '', activo: v.activo === 'true' } };
+        vars = { id: editingId, datos: { nombre: v.nombre.trim(), correo: v.correo?.trim() || '', telefono: v.telefono?.trim() || '', activo: v.activo === 'true' } };
       } else {
         query = 'mutation($codigoLector:String!,$nombre:String!,$correo:String,$telefono:String){agregarLector(codigoLector:$codigoLector,nombre:$nombre,correo:$correo,telefono:$telefono){id}}';
-        vars = { codigoLector: v.codigoLector.trim(), nombre: v.nombre.trim(), correo: v.correo || '', telefono: v.telefono || '' };
+        vars = { codigoLector: v.codigoLector.trim().toUpperCase(), nombre: v.nombre.trim(), correo: v.correo?.trim() || '', telefono: v.telefono?.trim() || '' };
       }
     } else if (page === 'loans') {
       query = 'mutation($lectorId:ID!,$ejemplarId:ID!,$fechaVencimiento:String!){registrarPrestamo(lectorId:$lectorId,ejemplarId:$ejemplarId,fechaVencimiento:$fechaVencimiento){id}}';
