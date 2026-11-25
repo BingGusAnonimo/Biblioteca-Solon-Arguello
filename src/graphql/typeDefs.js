@@ -20,6 +20,25 @@ const typeDefs = `#graphql
     isbn: String
   }
 
+  enum EstadoEjemplar {
+    DISPONIBLE
+    PRESTADO
+    BAJA
+  }
+
+  type Ejemplar {
+    id: ID!
+    libro: Libro!
+    codigoInventario: String!
+    estado: EstadoEjemplar!
+    ubicacion: String
+  }
+
+  input ActualizarEjemplarInput {
+    estado: EstadoEjemplar
+    ubicacion: String
+  }
+
   type Query {
     estado: String!
 
@@ -30,8 +49,15 @@ const typeDefs = `#graphql
     ): [Libro!]!
 
     libro(id: ID!): Libro
-
     totalLibros: Int!
+
+    ejemplares(
+      libroId: ID
+      estado: EstadoEjemplar
+    ): [Ejemplar!]!
+
+    ejemplar(id: ID!): Ejemplar
+    totalEjemplares: Int!
   }
 
   type Mutation {
@@ -50,8 +76,20 @@ const typeDefs = `#graphql
     ): Libro
 
     eliminarLibro(id: ID!): Boolean!
-  }
 
+    agregarEjemplar(
+      libroId: ID!
+      codigoInventario: String!
+      ubicacion: String
+    ): Ejemplar!
+
+    actualizarEjemplar(
+      id: ID!
+      datos: ActualizarEjemplarInput!
+    ): Ejemplar
+
+    eliminarEjemplar(id: ID!): Boolean!
+  }
 `;
 
 module.exports = typeDefs;
