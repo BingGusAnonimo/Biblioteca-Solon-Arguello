@@ -13,6 +13,8 @@ const typeDefs = require('./src/graphql/typeDefs');
 const resolvers = require('./src/graphql/resolvers');
 const catalogoTypeDefs = require('./src/graphql/catalogoTypeDefs');
 const catalogoResolvers = require('./src/graphql/catalogoResolvers');
+const reportesTypeDefs = require('./src/graphql/reportesTypeDefs');
+const reportesResolvers = require('./src/graphql/reportesResolvers');
 
 async function iniciarServidor() {
   try {
@@ -30,10 +32,10 @@ async function iniciarServidor() {
 
     // El esquema del catálogo se suma al esquema y los resolvers existentes.
     const apollo = new ApolloServer({
-      typeDefs: [typeDefs, catalogoTypeDefs],
+      typeDefs: [typeDefs, catalogoTypeDefs, reportesTypeDefs],
       resolvers: {
         ...resolvers,
-        Query: { ...resolvers.Query, ...catalogoResolvers.Query }
+        Query: { ...resolvers.Query, ...catalogoResolvers.Query, ...reportesResolvers.Query }
       },
       plugins: [ApolloServerPluginDrainHttpServer({ httpServer })]
     });
@@ -54,6 +56,7 @@ async function iniciarServidor() {
     console.log(`Catálogo público: http://localhost:${port}/catalogo.html`);
     console.log(`Panel administrativo: http://localhost:${port}/admin.html`);
     console.log(`Apollo Sandbox: http://localhost:${port}/graphql`);
+    console.log('Reportes: 30 consultas avanzadas disponibles en GraphQL');
   } catch (error) {
     console.error('Error al iniciar el servidor:', error.message);
     process.exitCode = 1;
