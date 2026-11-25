@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#14263e">
+  <meta name="description" content="Prototipo académico de catálogo bibliotecario. Consulta títulos y disponibilidad de ejemplares.">
+  <title>Catálogo | Biblioteca Solón Argüello</title>
+  <link rel="stylesheet" href="/catalogo.css">
+  <script defer src="/catalogo.js"></script>
+</head>
+<body>
+  <div class="demo-banner" role="note">Prototipo académico · Catálogo de demostración con datos de prueba · No es un portal oficial de la biblioteca</div>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/catalogo.html" aria-label="Catálogo Solón Argüello, inicio">
+        <span class="brand-symbol" aria-hidden="true">S</span>
+        <span class="brand-copy"><strong>SOLÓN ARGÜELLO</strong><small>Catálogo bibliotecario</small></span>
+      </a>
+      <nav class="top-nav" aria-label="Navegación">
+        <a class="nav-current" href="#catalogo">Explorar catálogo</a>
+        <a href="#acerca">Acerca del proyecto</a>
+        <a class="nav-contact" href="https://www.facebook.com/BibliotecaSolonArguello?locale=es_LA" target="_blank" rel="noopener noreferrer">Biblioteca ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="wrap hero-grid">
+        <div class="hero-content">
+          <span class="eyebrow"><span class="gold-dot" aria-hidden="true"></span> EXPLORA, DESCUBRE Y LEE</span>
+          <h1 id="hero-title">Tu próxima lectura <em>comienza aquí.</em></h1>
+          <p>Busca títulos, explora las categorías y consulta cuántos ejemplares están disponibles en nuestro catálogo de demostración.</p>
+          <a class="hero-btn" href="#catalogo">Explorar libros <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="decor deco-one"></div>
+          <div class="decor deco-two"></div>
+          <div class="book-stack">
+            <div class="standing-book b-one"><span>LECTURAS</span></div>
+            <div class="standing-book b-two"><span>HISTORIAS</span></div>
+            <div class="standing-book b-three"><span>CULTURA</span></div>
+            <div class="standing-book b-four"><span>IDEAS</span></div>
+          </div>
+          <div class="hero-caption">El conocimiento conecta generaciones.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="catalog-section" id="catalogo" aria-labelledby="catalog-title">
+      <div class="wrap">
+        <div class="section-title-row">
+          <div>
+            <span class="section-kicker">COLECCIÓN DIGITAL</span>
+            <h2 id="catalog-title">Explora nuestros títulos</h2>
+            <p>Consulta información bibliográfica y existencias actualizadas desde MongoDB Atlas.</p>
+          </div>
+          <div class="count-box"><strong id="total-books">—</strong><small>TÍTULOS ENCONTRADOS</small></div>
+        </div>
+
+        <form id="search-form" class="filter-panel" autocomplete="off">
+          <div class="filter-row">
+            <label class="search-field" for="search-input">
+              <span class="search-icon" aria-hidden="true">⌕</span>
+              <input id="search-input" name="busqueda" type="search" maxlength="120" placeholder="Buscar título, autor, editorial o ISBN..." aria-label="Buscar en el catálogo">
+            </label>
+            <label class="category-field" for="category-select">
+              <span class="sr-only">Categoría</span>
+              <select id="category-select" name="categoria">
+                <option value="">Todas las categorías</option>
+              </select>
+            </label>
+            <button type="submit" class="search-button">Buscar <span aria-hidden="true">→</span></button>
+          </div>
+          <div class="filter-foot">
+            <label class="availability-check"><input id="only-available" type="checkbox"><span>Mostrar solo libros disponibles</span></label>
+            <button type="button" class="clear-btn" id="clear-filters">Limpiar filtros</button>
+          </div>
+        </form>
+
+        <div class="results-header">
+          <div><h3>Resultados del catálogo</h3><p id="result-description" aria-live="polite">Preparando la consulta...</p></div>
+          <span class="connection-status" id="connection-status"><span class="status-dot"></span> Consultando Atlas</span>
+        </div>
+        <div class="results-grid" id="results-grid" aria-live="polite" aria-busy="true"></div>
+        <div class="pager" id="pager" hidden>
+          <button type="button" id="previous-page" class="page-btn">← Anterior</button>
+          <span id="page-label">Página 1</span>
+          <button type="button" id="next-page" class="page-btn">Siguiente →</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-section" id="acerca" aria-labelledby="about-title">
+      <div class="wrap about-inner">
+        <div>
+          <span class="section-kicker">ACERCA DE ESTE PROYECTO</span>
+          <h2 id="about-title">Una biblioteca más accesible.</h2>
+          <p>Este prototipo universitario busca facilitar la consulta del inventario bibliográfico y permitir que los visitantes conozcan las existencias antes de acudir a la biblioteca.</p>
+        </div>
+        <div class="about-tech"><span>MongoDB Atlas</span><span>GraphQL</span><span>Apollo Server</span><span>JavaScript</span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <div><strong>SOLÓN ARGÜELLO</strong><small>Proyecto académico · Laboratorio de Bases de Datos NoSQL</small></div>
+      <p>Datos de demostración. La disponibilidad mostrada no corresponde necesariamente al inventario real de la biblioteca.</p>
+    </div>
+  </footer>
+
+  <dialog id="book-dialog" class="book-dialog" aria-labelledby="detail-title">
+    <div class="dialog-head"><h2 id="detail-title">Ficha bibliográfica</h2><button type="button" id="close-dialog" aria-label="Cerrar ficha">×</button></div>
+    <div id="book-detail"></div>
+  </dialog>
+</body>
+</html>

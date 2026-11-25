@@ -11,6 +11,8 @@ const { expressMiddleware } = require('@as-integrations/express5');
 
 const typeDefs = require('./src/graphql/typeDefs');
 const resolvers = require('./src/graphql/resolvers');
+const catalogoTypeDefs = require('./src/graphql/catalogoTypeDefs');
+const catalogoResolvers = require('./src/graphql/catalogoResolvers');
 
 async function iniciarServidor() {
   try {
@@ -25,26 +27,31 @@ async function iniciarServidor() {
 
     const app = express();
     const httpServer = http.createServer(app);
+
+    // El esquema del catálogo se suma al esquema y los resolvers existentes.
     const apollo = new ApolloServer({
-      typeDefs,
-      resolvers,
+      typeDefs: [typeDefs, catalogoTypeDefs],
+      resolvers: {
+        ...resolvers,
+        Query: { ...resolvers.Query, ...catalogoResolvers.Query }
+      },
       plugins: [ApolloServerPluginDrainHttpServer({ httpServer })]
     });
     await apollo.start();
 
-    // Panel y API en el mismo servidor. CORS necesario para Apollo Sandbox.
     app.use('/graphql',
       cors({ origin: ['http://localhost:4000', 'http://127.0.0.1:4000', 'https://studio.apollographql.com'] }),
       express.json({ limit: '1mb' }),
       expressMiddleware(apollo)
     );
 
-    app.use(express.static(path.join(__dirname, 'public')));
-    app.get('/', (_req, res) => res.redirect('/admin.html'));
+    app.use(express.static(path.join(__dirname, 'public'), { index: false }));
+    app.get('/', (_req, res) => res.redirect('/catalogo.html'));
 
     const port = Number(process.env.PORT) || 4000;
-    await new Promise((resolve) => httpServer.listen(port, '127.0.0.1', resolve));
+    await new Promise(resolve => httpServer.listen(port, '127.0.0.1', resolve));
 
+    console.log(`Catálogo público: http://localhost:${port}/catalogo.html`);
     console.log(`Panel administrativo: http://localhost:${port}/admin.html`);
     console.log(`Apollo Sandbox: http://localhost:${port}/graphql`);
   } catch (error) {
