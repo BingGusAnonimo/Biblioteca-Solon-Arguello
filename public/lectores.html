@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Biblioteca Solón Argüello | Administración</title>
+  <link rel="stylesheet" href="/admin.css">
+  <script defer src="/admin.js"></script>
+</head>
+<body data-page="readers">
+<div class="shell">
+  <aside class="sidebar">
+    <a class="brand" href="/admin.html" aria-label="Inicio del panel">
+      <div class="brand-mark">S</div>
+      <div><strong>SOLÓN ARGÜELLO</strong><span>Biblioteca · Administración</span></div>
+    </a>
+    <p class="nav-label">MENÚ PRINCIPAL</p>
+    <nav aria-label="Navegación principal"><a class="nav-link " href="admin.html"><span class="nav-icon">⌂</span><span>Resumen</span></a>
+<a class="nav-link " href="libros.html"><span class="nav-icon">▤</span><span>Libros</span></a>
+<a class="nav-link " href="ejemplares.html"><span class="nav-icon">▥</span><span>Ejemplares</span></a>
+<a class="nav-link active" href="lectores.html"><span class="nav-icon">♙</span><span>Lectores</span></a>
+<a class="nav-link " href="prestamos.html"><span class="nav-icon">↗</span><span>Préstamos</span></a></nav>
+    <div class="side-bottom">
+      <div class="demo-mark"><span class="demo-dot"></span><div><strong>Entorno de desarrollo</strong><small>Datos de MongoDB Atlas</small></div></div>
+      <p>Proyecto educativo. No publicar sin autenticación.</p>
+    </div>
+  </aside>
+  <div class="main-wrap">
+    <header class="topbar">
+      <div class="crumb"><span>Biblioteca</span><span class="sep">/</span><span id="crumb-current">Panel</span></div>
+      <div class="top-right"><span id="connection-pill" class="connection"><span class="status-dot"></span>Comprobando conexión</span><span class="avatar">SA</span></div>
+    </header>
+    <main class="content">
+      <div class="heading-row"><div><p class="eyebrow">SISTEMA DE GESTIÓN BIBLIOTECARIA</p><h1 id="page-title">Panel administrativo</h1><p class="lead" id="page-subtitle">Consulta y administra la información de tu biblioteca.</p></div><div class="heading-actions"><button id="refresh-btn" class="btn btn-outline" type="button">↻ Actualizar</button><button id="new-btn" class="btn btn-primary" type="button" hidden>＋ Nuevo registro</button></div></div>
+      <section id="dashboard" class="dashboard" hidden>
+        <div class="metric-grid" id="metrics"></div>
+        <div class="dashboard-grid">
+          <section class="surface"><div class="section-head"><div><h2>Actividad reciente</h2><p>Préstamos registrados en el sistema</p></div><a href="/prestamos.html" class="text-link">Ver todos →</a></div><div id="recent-list" class="recent-list"></div></section>
+          <section class="surface focus-card"><div><div class="mini-icon">▦</div><h2>Catálogo y disponibilidad</h2><p>Consulta las existencias y administra ejemplares desde un mismo lugar.</p></div><a href="/ejemplares.html" class="btn btn-navy">Ver inventario →</a></section>
+        </div>
+      </section>
+      <section class="surface listing" id="listing" hidden>
+        <div class="section-head listing-head"><div><h2 id="list-heading">Registros</h2><p id="list-description">Información actualizada desde Atlas</p></div><span class="count-pill" id="count-pill">0 registros</span></div>
+        <div class="toolbar"><label class="search-box"><span aria-hidden="true">⌕</span><input id="search" placeholder="Buscar en los registros..." autocomplete="off" aria-label="Buscar registros"></label><span class="table-note">Vista inicial: hasta 100 registros</span></div>
+        <div class="table-scroll"><table><thead id="table-head"></thead><tbody id="table-body"></tbody></table></div>
+        <div class="table-footer"><span id="showing-count"></span><span>Datos sincronizados al actualizar</span></div>
+      </section>
+    </main>
+  </div>
+</div>
+<dialog id="record-dialog" aria-labelledby="dialog-title"><form id="record-form"><div class="dialog-head"><div><p class="eyebrow">ADMINISTRACIÓN</p><h2 id="dialog-title">Nuevo registro</h2></div><button type="button" class="icon-button" id="close-dialog" aria-label="Cerrar">×</button></div><div id="form-fields" class="form-fields"></div><div class="dialog-actions"><button type="button" class="btn btn-outline" id="cancel-dialog">Cancelar</button><button type="submit" class="btn btn-primary" id="save-dialog">Guardar</button></div></form></dialog>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
