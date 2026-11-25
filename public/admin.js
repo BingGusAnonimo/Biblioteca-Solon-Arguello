@@ -1,6 +1,6 @@
 'use strict';
 
-// Panel local de desarrollo. La API todavía NO tiene autenticación.
+// Panel protegido por sesión administrativa y token de seguridad.
 const page = document.body.dataset.page || 'dashboard';
 const labels = {
   dashboard: ['Panel administrativo', 'Resumen de la información de la biblioteca.', 'Resumen'],
@@ -36,7 +36,8 @@ function showToast(message, error = false) {
 async function gql(query, variables = {}) {
   const response = await fetch('/graphql', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'x-csrf-token': window.SolonSesion.csrfToken },
+    credentials: 'same-origin',
     body: JSON.stringify({ query, variables })
   });
   const result = await response.json();
@@ -351,7 +352,9 @@ async function tableAction(event) {
   }
 }
 
-function init() {
+async function init() {
+  if (!await window.SolonSesion.verificar()) return;
+  window.SolonSesion.ponerBoton();
   const [title, desc, crumb] = labels[page] || labels.dashboard;
   $('page-title').textContent = title;
   $('page-subtitle').textContent = desc;

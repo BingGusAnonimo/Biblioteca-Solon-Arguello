@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acceso del personal | Biblioteca Solón Argüello</title>
+  <link rel="stylesheet" href="/login.css">
+  <script defer src="/login.js"></script>
+</head>
+<body>
+  <main class="login-layout">
+    <section class="identity">
+      <a class="back" href="/catalogo.html">← Volver al catálogo público</a>
+      <span class="monogram">S</span>
+      <p class="eyebrow">BIBLIOTECA PÚBLICA CENTRAL ESTATAL</p>
+      <h1>Solón Argüello</h1>
+      <p>Administración del catálogo, ejemplares, lectores, préstamos y reportes bibliotecarios.</p>
+      <div class="disclaimer">Prototipo académico · Datos de demostración</div>
+    </section>
+    <section class="form-side">
+      <div class="panel">
+        <span class="eyebrow gold">ACCESO RESTRINGIDO</span>
+        <h2>Bienvenido al panel</h2>
+        <p>Ingresa con la cuenta administrativa creada desde la terminal.</p>
+        <form id="login-form" autocomplete="on">
+          <label for="usuario">Usuario</label>
+          <input id="usuario" name="username" type="text" maxlength="40" autocomplete="username" required autofocus>
+          <label for="contrasena">Contraseña</label>
+          <input id="contrasena" name="password" type="password" autocomplete="current-password" required>
+          <button id="login-btn" type="submit">Iniciar sesión →</button>
+          <div id="mensaje" role="status" aria-live="polite"></div>
+        </form>
+        <div class="info">Solo el personal autorizado puede realizar cambios. El catálogo público permanece disponible sin iniciar sesión.</div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -157,6 +157,8 @@
     }
   }
   async function iniciar() {
+    if (!await window.SolonSesion.verificar()) return;
+    window.SolonSesion.ponerBoton();
     $('run-btn').disabled = true; $('refresh-btn').disabled = true;
     try {
       const data = await graphql('query ListarReportes { reportesDisponibles { codigo campo nombre area } }');

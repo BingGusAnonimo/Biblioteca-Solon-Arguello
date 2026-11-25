@@ -1,0 +1,26 @@
+:root { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color:#15253a; background:#f5f7fa; }
+* { box-sizing: border-box; }
+body { margin:0; }
+.login-layout { display:grid; grid-template-columns: 1fr 1fr; min-height:100vh; }
+.identity { background:#142840; color:#f8fbff; padding:clamp(2rem,6vw,6rem); display:flex; flex-direction:column; justify-content:center; position:relative; }
+.back { position:absolute;top:30px;left:clamp(2rem,6vw,6rem);text-decoration:none;color:#d9e4ed;font-size:.9rem; }
+.back:hover { color:white;text-decoration:underline; }
+.monogram { font-family:Georgia,serif; background:#dfba78; color:#142840; height:76px;width:76px;display:grid;place-items:center;border-radius:19px;font-size:3rem;font-weight:bold;margin-bottom:30px; }
+.eyebrow { text-transform:uppercase;letter-spacing:.18em;font-size:.75rem;font-weight:800;color:#dac18e; }
+.identity h1 { font-family:Georgia,serif; font-size:clamp(2.8rem,5vw,5rem);letter-spacing:-.035em;margin:.3em 0;line-height:1.08; }
+.identity p:not(.eyebrow) { max-width:440px;color:#c7d5e3;line-height:1.8; }
+.disclaimer { margin-top:3rem;border-top:1px solid #39506a;padding-top:22px;color:#c7d5e3;font-size:.86rem; }
+.form-side { padding:2rem;display:grid;place-items:center; }
+.panel { width:min(100%,410px); }
+.gold { color:#8a6939; }
+h2 { font-size:2rem;letter-spacing:-.035em;margin:.4em 0; }
+.panel>p { color:#637389;line-height:1.7;margin-bottom:2rem; }
+label { display:block;font-weight:650;font-size:.9rem;margin:1.2rem 0 .5rem; }
+input { width:100%;border:1px solid #d0d9e4;border-radius:12px;padding:14px 15px;font:inherit;background:white;outline:none; }
+input:focus { border-color:#1b4e80;box-shadow:0 0 0 3px #bfd4e988; }
+button { display:block;width:100%;background:#162f4c;border:0;border-radius:12px;color:#fff;padding:15px 20px;font:inherit;font-weight:700;margin-top:1.8rem;cursor:pointer; }
+button:hover { background:#244566; }
+button:disabled { opacity:.65;cursor:wait; }
+#mensaje { min-height:24px;color:#ad3333;margin-top:13px;font-size:.9rem; }
+.info {margin-top:2.5rem;border-top:1px solid #e1e6ed;padding-top:1.3rem;color:#67768a;font-size:.86rem;line-height:1.7;}
+@media(max-width:800px){.login-layout{grid-template-columns:1fr}.identity{min-height:260px;padding:70px 2rem 2rem}.back{left:2rem}.identity h1{font-size:2.4rem}.identity .disclaimer{display:none}.form-side{padding:3rem 1.5rem}}
