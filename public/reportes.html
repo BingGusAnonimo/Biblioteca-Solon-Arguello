@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Reportes y estadísticas | Biblioteca Solón Argüello</title>
+  <link rel="stylesheet" href="/admin.css">
+  <link rel="stylesheet" href="/reportes.css">
+  <script defer src="/reportes-util.js"></script>
+  <script defer src="/reportes.js"></script>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <a class="brand" href="/admin.html" aria-label="Ir al resumen del panel">
+      <div class="brand-mark">S</div>
+      <div><strong>SOLÓN ARGÜELLO</strong><span>Biblioteca · Administración</span></div>
+    </a>
+    <p class="nav-label">MENÚ PRINCIPAL</p>
+    <nav aria-label="Navegación principal">
+      <a class="nav-link" href="admin.html"><span class="nav-icon">⌂</span><span>Resumen</span></a>
+      <a class="nav-link" href="libros.html"><span class="nav-icon">▤</span><span>Libros</span></a>
+      <a class="nav-link" href="ejemplares.html"><span class="nav-icon">▥</span><span>Ejemplares</span></a>
+      <a class="nav-link" href="lectores.html"><span class="nav-icon">♙</span><span>Lectores</span></a>
+      <a class="nav-link" href="prestamos.html"><span class="nav-icon">↗</span><span>Préstamos</span></a>
+      <a class="nav-link active" aria-current="page" href="reportes.html"><span class="nav-icon">▥</span><span>Reportes</span></a>
+    </nav>
+    <div class="side-bottom">
+      <div class="demo-mark"><span class="demo-dot"></span><div><strong>Entorno de desarrollo</strong><small>Datos de MongoDB Atlas</small></div></div>
+      <p>Datos académicos de demostración. No publicar sin autenticación.</p>
+    </div>
+  </aside>
+  <div class="main-wrap">
+    <header class="topbar">
+      <div class="crumb"><span>Biblioteca</span><span class="sep">/</span><span>Reportes</span></div>
+      <div class="top-right"><span id="connection-pill" class="connection"><span class="status-dot"></span>Comprobando conexión</span><span class="avatar">SA</span></div>
+    </header>
+    <main class="content reports-main">
+      <div class="heading-row reports-heading">
+        <div><p class="eyebrow">SISTEMA DE GESTIÓN BIBLIOTECARIA</p><h1>Reportes y estadísticas</h1><p class="lead">Analiza libros, lectores y préstamos mediante las consultas reales de GraphQL.</p></div>
+        <div class="heading-actions"><button id="refresh-btn" class="btn btn-outline" type="button">↻ Actualizar</button><a class="btn btn-primary" href="/graphql" target="_blank" rel="noopener noreferrer">Abrir Apollo ↗</a></div>
+      </div>
+      <div class="report-warning" role="note">Este entorno utiliza registros de demostración. Las cifras no representan el inventario oficial de la biblioteca.</div>
+      <section class="surface chooser" aria-labelledby="chooser-title">
+        <div class="section-head"><div><h2 id="chooser-title">Explorar las consultas complejas</h2><p>30 consultas organizadas por integrante y temática</p></div><span id="report-count" class="count-pill">Cargando…</span></div>
+        <div class="chooser-controls">
+          <label class="control"><span>Área de análisis</span><select id="area-select"><option value="TODOS">Todas las áreas</option><option value="LIBROS">A · Libros e inventario</option><option value="LECTORES">B · Lectores y actividad</option><option value="PRESTAMOS">C · Préstamos y devoluciones</option></select></label>
+          <label class="control control-large"><span>Reporte</span><select id="report-select" aria-describedby="report-hint"><option value="">Cargando reportes...</option></select></label>
+          <button class="btn btn-navy" type="button" id="run-btn">Visualizar reporte</button>
+        </div>
+        <p class="input-hint" id="report-hint">Selecciona una consulta para consultar datos actualizados de MongoDB Atlas.</p>
+      </section>
+      <section class="report-summary" aria-live="polite">
+        <div class="report-current">
+          <span id="report-code" class="code-chip">—</span>
+          <div><h2 id="report-title">Selecciona una consulta</h2><p id="report-description">Los resultados aparecerán aquí.</p></div>
+        </div>
+        <div class="report-actions"><button id="copy-query-btn" type="button" class="btn btn-outline" disabled>Copiar GraphQL</button><button id="csv-btn" type="button" class="btn btn-outline" disabled>Exportar CSV</button><button id="json-btn" type="button" class="btn btn-outline" disabled>Exportar JSON</button></div>
+      </section>
+      <div class="report-kpis">
+        <div class="surface kpi"><span>Filas del reporte</span><strong id="kpi-rows">—</strong><small>Resultados de la consulta seleccionada</small></div>
+        <div class="surface kpi"><span>Suma de cantidades mostradas</span><strong id="kpi-total">—</strong><small>No representa necesariamente un total global</small></div>
+        <div class="surface kpi"><span>Última consulta</span><strong id="kpi-time">—</strong><small>Hora local de la computadora</small></div>
+      </div>
+      <div class="report-grid">
+        <section class="surface" aria-labelledby="chart-title">
+          <div class="section-head chart-head"><div><h2 id="chart-title">Gráfica del reporte</h2><p id="chart-subtitle">Valores obtenidos de GraphQL</p></div>
+            <label class="control small-control"><span>Medida</span><select id="measure-select" disabled><option value="cantidad">Cantidad</option><option value="auxiliar">Auxiliar</option><option value="porcentaje">Porcentaje</option><option value="promedio">Promedio</option></select></label>
+          </div>
+          <div class="chart-area" id="chart-area"><div class="report-empty">Selecciona un reporte para visualizar su gráfica.</div></div>
+          <div class="chart-foot" id="chart-foot">Las barras se calculan con los valores de cada fila, no con datos inventados.</div>
+        </section>
+        <section class="surface report-table" aria-labelledby="table-title">
+          <div class="section-head"><div><h2 id="table-title">Resultados detallados</h2><p>Datos completos que devuelve la consulta</p></div><span id="table-count" class="count-pill">0 filas</span></div>
+          <div class="table-scroll"><table><thead><tr><th>Etiqueta</th><th>Cantidad</th><th>Auxiliar</th><th>%</th><th>Promedio</th><th>Detalle</th></tr></thead><tbody id="result-body"><tr><td colspan="6" class="empty">Aún no hay resultados.</td></tr></tbody></table></div>
+        </section>
+      </div>
+      <p class="report-status" id="report-status" role="status" aria-live="polite">Preparando el listado de reportes…</p>
+    </main>
+  </div>
+</div>
+</body>
+</html>

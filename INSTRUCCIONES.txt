@@ -1,0 +1,46 @@
+PANEL DE REPORTES — BIBLIOTECA SOLÓN ARGÜELLO
+
+Objetivo: visualizar los 30 reportes GraphQL reales en gráficas de barras y tablas.
+La actualización solo contiene frontend, una herramienta para añadir enlace al menú y pruebas locales.
+NO incluye contraseñas, no sobrescribe index.js, resolvers, esquemas ni modelos.
+NO inserta ni modifica documentos.
+
+REQUISITO: haber instalado Reportes_y_Auditoria_Biblioteca_Solon.zip, con
+  src/graphql/reportesTypeDefs.js
+  src/graphql/reportesResolvers.js
+  src/analytics/reportes.js
+  y el index.js que combina dichos archivos.
+
+INSTALACIÓN (PowerShell en la carpeta BIBLIOTECA_SOLON_NOSQL):
+1. Detén npm start con Ctrl + C.
+2. Haz un commit de respaldo de tus cambios; verifica que .env no esté rastreado.
+3. Extrae el ZIP a la RAÍZ de tu proyecto, conservando la estructura.
+4. Ejecuta: node --test tests/reportes-ui.test.js
+5. Ejecuta: node scripts/integrar-menu-reportes.js
+   Este paso inserta la opción Reportes en el menú de las cinco páginas existentes.
+   Puedes repetirlo sin duplicar el enlace.
+6. Ejecuta: npm start
+7. Abre: http://localhost:4000/reportes.html
+
+FUNCIONES:
+- Lista de reportes cargada desde la Query reportesDisponibles.
+- Selección por área y reporte, 30 opciones.
+- Query dinámica de solo lectura con los campos del esquema FilaReporte.
+- Gráfica de barras horizontales y tabla detallada.
+- Elegir cantidad / auxiliar / porcentaje / promedio según existencia de datos.
+- Exportación CSV (texto protegido contra fórmulas) y JSON.
+- Copiar la consulta a Apollo Sandbox.
+- La gráfica y tabla no contienen datos inventados.
+
+Si se muestra "La API no tiene los reportes instalados", comprueba que ejecutaste
+la actualización anterior que incorpora reportesDisponibles en GraphQL.
+
+RESTRICCIÓN: Entorno local sin autenticación. No publicar en Internet hasta
+implementar control de acceso y permisos de administración.
+
+Después de probar, guarda el avance:
+ git status
+ git check-ignore .env
+ git add public/reportes.html public/reportes.css public/reportes.js public/reportes-util.js scripts/integrar-menu-reportes.js tests/reportes-ui.test.js public/admin.html public/libros.html public/ejemplares.html public/lectores.html public/prestamos.html
+ git diff --cached --name-only
+ git commit -m "feat: visualizar reportes GraphQL en panel administrativo"
